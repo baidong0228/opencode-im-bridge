@@ -1,0 +1,50 @@
+{
+  "name": "opencode-im-bridge",
+  "version": "0.1.0",
+  "description": "IM bridge plugin for OpenCode - access OpenCode remotely via Telegram, Discord, and more",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "eslint src",
+    "test": "vitest"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "telegram",
+    "discord",
+    "im",
+    "bridge",
+    "remote",
+    "ai",
+    "coding-agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opencode-im-bridge/opencode-im-bridge"
+  },
+  "bugs": {
+    "url": "https://github.com/opencode-im-bridge/opencode-im-bridge/issues"
+  },
+  "homepage": "https://github.com/opencode-im-bridge/opencode-im-bridge#readme",
+  "peerDependencies": {
+    "opencode-ai": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

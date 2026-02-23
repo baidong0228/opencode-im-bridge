@@ -1,50 +1,94 @@
 {
   "name": "opencode-im-bridge",
   "version": "0.1.0",
-  "description": "IM bridge plugin for OpenCode - access OpenCode remotely via Telegram, Discord, and more",
+  "description": "Remote control OpenCode via IM platforms (QQ, WeChat, Feishu/Lark) - a lightweight alternative to OpenClawd",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "opencode-im-bridge": "dist/cli.js"
+  },
   "files": [
-    "dist"
+    "dist",
+    "schemas",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "start:dev": "node --loader ts-node/esm src/cli.ts",
     "clean": "rm -rf dist",
-    "lint": "eslint src",
-    "test": "vitest"
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build && pnpm test",
+    "release": "standard-version",
+    "docker:build": "docker build -t opencode-im-bridge .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
   "keywords": [
     "opencode",
-    "opencode-plugin",
-    "telegram",
-    "discord",
-    "im",
-    "bridge",
-    "remote",
-    "ai",
-    "coding-agent"
+    "opencode-ai",
+    "qq-bot",
+    "qq-official",
+    "wechat-bot",
+    "feishu",
+    "lark",
+    "im-bridge",
+    "remote-control",
+    "ai-coding-agent",
+    "onebot",
+    "napcat",
+    "chatbot",
+    "messaging"
   ],
-  "author": "",
+  "author": "baidong0228",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/opencode-im-bridge/opencode-im-bridge"
+    "url": "https://github.com/baidong0228/opencode-im-bridge.git"
   },
   "bugs": {
-    "url": "https://github.com/opencode-im-bridge/opencode-im-bridge/issues"
+    "url": "https://github.com/baidong0228/opencode-im-bridge/issues"
   },
-  "homepage": "https://github.com/opencode-im-bridge/opencode-im-bridge#readme",
-  "peerDependencies": {
-    "opencode-ai": ">=1.0.0"
+  "homepage": "https://github.com/baidong0228/opencode-im-bridge#readme",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^13.0.0",
+    "ws": "^8.18.0",
+    "dotenv": "^16.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.0",
+    "@vitest/coverage-v8": "^3.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   },
-  "engines": {
-    "node": ">=20.0.0"
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

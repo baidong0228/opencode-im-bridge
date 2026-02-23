@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "port": {
+      "type": "number",
+      "description": "Bridge 服务端口",
+      "default": 3000
+    },
+    "logLevel": {
+      "type": "string",
+      "enum": ["trace", "debug", "info", "warn", "error"],
+      "description": "日志级别",
+      "default": "info"
+    },
+    "opencode": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "OpenCode API 地址"
+        },
+        "apiKey": {
+          "type": "string",
+          "description": "OpenCode API Key"
+        },
+        "workDir": {
+          "type": "string",
+          "description": "默认工作目录"
+        }
+      },
+      "required": []
+    },
+    "qq": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "是否启用 QQ 适配器"
+        },
+        "wsUrl": {
+          "type": "string",
+          "description": "OneBot WebSocket 地址"
+        },
+        "accessToken": {
+          "type": "string",
+          "description": "OneBot access_token"
+        },
+        "appId": {
+          "type": "string",
+          "description": "QQ 开放平台 AppID (官方机器人)"
+        },
+        "appSecret": {
+          "type": "string",
+          "description": "QQ 开放平台 AppSecret (官方机器人)"
+        },
+        "reconnectInterval": {
+          "type": "number",
+          "description": "重连间隔 (毫秒)",
+          "default": 5000
+        },
+        "allowedUsers": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "允许的 QQ 用户号列表"
+        },
+        "allowedGroups": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "允许的 QQ 群号列表"
+        }
+      }
+    },
+    "lark": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "是否启用飞书适配器"
+        },
+        "appId": {
+          "type": "string",
+          "description": "飞书 App ID"
+        },
+        "appSecret": {
+          "type": "string",
+          "description": "飞书 App Secret"
+        },
+        "encryptKey": {
+          "type": "string",
+          "description": "飞书 Encrypt Key"
+        },
+        "verificationToken": {
+          "type": "string",
+          "description": "飞书 Verification Token"
+        }
+      }
+    },
+    "wechat": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "是否启用微信适配器"
+        },
+        "corpId": {
+          "type": "string",
+          "description": "企业微信 CorpId"
+        },
+        "agentId": {
+          "type": "string",
+          "description": "企业微信 AgentId"
+        },
+        "secret": {
+          "type": "string",
+          "description": "企业微信 Secret"
+        }
+      }
+    }
+  },
+  "required": ["opencode"]
+}

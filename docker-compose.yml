@@ -1,0 +1,93 @@
+# ===========================================
+# Docker Compose for opencode-im-bridge
+# 一键启动所有服务
+# ===========================================
+# 
+# 使用方法:
+#   1. 复制 .env.example 为 .env
+#   2. 编辑 .env 填入配置
+#   3. 运行: docker-compose up -d
+#
+# ===========================================
+
+services:
+  # ============ opencode-im-bridge 主服务 ============
+  bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: opencode-im-bridge
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      # OpenCode 配置
+      - OPENCODE_BASE_URL=${OPENCODE_BASE_URL:-http://host.docker.internal:8080}
+      - OPENCODE_API_KEY=${OPENCODE_API_KEY}
+      - OPENCODE_WORK_DIR=/app/workspace
+      # QQ 配置 - 官方 API (开箱即用)
+      - QQ_ENABLED=${QQ_ENABLED:-true}
+      - QQ_APP_ID=${QQ_APP_ID}
+      - QQ_APP_SECRET=${QQ_APP_SECRET}
+      # QQ 配置 - OneBot (需要 NapCatQQ)
+      - QQ_WS_URL=${QQ_WS_URL:-ws://napcat:3001}
+      - QQ_ACCESS_TOKEN=${QQ_ACCESS_TOKEN}
+      # 权限控制
+      - QQ_ALLOWED_USERS=${QQ_ALLOWED_USERS}
+      - QQ_ALLOWED_GROUPS=${QQ_ALLOWED_GROUPS}
+    volumes:
+      # 工作目录 - OpenCode 操作的代码目录
+      - ${OPENCODE_WORK_DIR:-./workspace}:/app/workspace
+      # 持久化配置 (可选)
+      - ./config.json:/app/config.json:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - opencode-network
+    depends_on:
+      napcat:
+        condition: service_healthy
+        required: false
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ============ NapCatQQ (OneBot 实现) ============
+  # 可选: 仅在使用 OneBot 模式时需要
+  # 如果使用 QQ 官方 API，可以注释掉这个服务
+  napcat:
+    image: mlikiowa/napcat-docker:latest
+    container_name: napcat
+    restart: unless-stopped
+    environment:
+      - NAPCAT_GID=${NAPCAT_GID:-1000}
+      - NAPCAT_UID=${NAPCAT_UID:-1000}
+    ports:
+      - "3001:3001"  # WebSocket 端口
+      - "6099:6099"  # WebUI 端口
+    volumes:
+      # NapCatQQ 数据目录 (存储登录信息)
+      - ./data/napcat:/app/napcat/config
+    networks:
+      - opencode-network
+    profiles:
+      - onebot  # 使用 --profile onebot 启用
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  opencode-network:
+    driver: bridge
+
+volumes:
+  napcat-data:

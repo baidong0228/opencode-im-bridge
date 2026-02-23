@@ -1,0 +1,22 @@
+{
+  "$schema": "./config.schema.json",
+  "port": 3000,
+  "logLevel": "info",
+  "opencode": {
+    "baseUrl": "http://localhost:8080",
+    "workDir": "/path/to/your/project"
+  },
+  "qq": {
+    "enabled": true,
+    "wsUrl": "ws://localhost:3001",
+    "reconnectInterval": 5000,
+    "allowedUsers": [],
+    "allowedGroups": []
+  },
+  "lark": {
+    "enabled": false
+  },
+  "wechat": {
+    "enabled": false
+  }
+}

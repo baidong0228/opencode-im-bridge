@@ -1,5 +1,8 @@
 /**
- * IM adapters - platform-specific implementations
+ * IM Adapters
+ * IM 适配器
  */
 
-// Telegram, Discord, WhatsApp adapters will be implemented here
+export { BaseAdapter } from './base.js'
+export type { MessageHandler } from './base.js'
+export { QQAdapter } from './qq.js'

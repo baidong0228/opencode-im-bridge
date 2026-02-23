@@ -1,0 +1,60 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build output
+dist
+build
+*.tsbuildinfo
+
+# Development
+.git
+.gitignore
+.github
+.vscode
+.idea
+*.md
+!README.md
+
+# Config files (use environment variables)
+.env
+.env.*
+!.env.example
+config.json
+
+# Test files
+test
+tests
+*.test.ts
+*.spec.ts
+coverage
+.nyc_output
+
+# Scripts (not needed in container)
+scripts
+
+# Documentation
+docs
+examples
+CONTRIBUTING*
+SECURITY.md
+CHANGELOG.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs
+
+# Data directories
+data
+workspace

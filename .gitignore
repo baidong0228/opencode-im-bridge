@@ -17,14 +17,27 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+logs/
 
-# Environment
+# ============ 敏感配置文件 (请勿提交！) ============
+# 环境变量
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
 
+# 用户配置 (可能包含敏感信息)
+config.json
+config.local.json
+*.secret.json
+
+# ============ 其他 ============
 # Test coverage
 coverage/
 
 # Misc
 *.tgz
+
+# pnpm
+.pnpm-debug.log

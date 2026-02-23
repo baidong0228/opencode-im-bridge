@@ -1,213 +1,285 @@
 # OpenCode IM Bridge
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/opencode-im-bridge.svg)](https://nodejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![QQ](https://img.shields.io/badge/QQ-Official%20%7C%20OneBot-green.svg)](https://bot.q.qq.com)
 
-**A lightweight IM bridge for [OpenCode](https://opencode.ai) - Remote control your AI coding agent via QQ, WeChat, Feishu/Lark, and more.**
+**Remote control OpenCode via IM - Chat with your AI coding assistant in QQ.**
 
-[中文文档](./README.zh-CN.md)
+English | [中文](./README.zh-CN.md)
 
-## Why opencode-im-bridge?
+---
 
-While [OpenClawd](https://github.com/liam798/docker-openclawd) provides similar functionality, it comes with a heavy Docker-based architecture. **opencode-im-bridge** is designed to be:
+## 🎯 Quick Start Guide
 
-- 🪶 **Lightweight** - Single Node.js process, no Docker required
-- 🔌 **Pluggable** - Easy to add new IM platform adapters
-- 🔒 **Secure** - Sensitive configs via environment variables, never committed to git
-- 🚀 **Fast** - Minimal dependencies, quick startup
+| Your Situation | Recommended Mode | Why |
+|----------------|------------------|-----|
+| New user, want to try quickly | **Docker + OneBot** | One command, scan QR to login |
+| Have public server | Official API | No extra software needed |
+| Local dev, no public IP | **Docker + OneBot** | No tunneling required |
+| Prefer official API only | Official API + Tunnel | Need cloudflare/ngrok |
 
-## Features
+**👉 Most users: Docker + OneBot mode is recommended**
 
-- ✅ **QQ** - Two modes available:
-  - **Official API** - Out-of-the-box, no third-party client needed
-  - **OneBot Protocol** - Full features via NapCatQQ/go-cqhttp
-- 🚧 **Feishu/Lark** - Official Bot API (coming soon)
-- 🚧 **WeChat** - Enterprise WeChat (coming soon)
-- 📱 Remote control from anywhere
-- 🔐 User permission control (allowlist by user/group)
-- 💬 Multi-session support
-- 🐳 Docker ready - Single `docker-compose up` to start
+---
 
-## Quick Start
+## 🚀 Quick Start
 
-### Option 1: Docker (Recommended)
+### Option 1: Docker + OneBot (Recommended)
 
-The easiest way to get started:
+**Best for: Local development, beginners, no public IP**
+
+#### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mac/Windows) or Docker (Linux)
+- A QQ account (for the bot)
+
+#### Steps
 
 ```bash
-# Clone the repository
+# 1. Clone the project
 git clone https://github.com/baidong0228/opencode-im-bridge.git
 cd opencode-im-bridge
 
-# Copy and configure environment
+# 2. Create config file
 cp .env.example .env
-# Edit .env and set your QQ_APP_ID and QQ_APP_SECRET
 
-# Start with Docker (QQ Official API mode - out of the box)
-docker-compose up -d
+# 3. Edit .env for OneBot mode
+# Only need to set:
+QQ_ENABLED=true
+QQ_WS_URL=ws://napcat:3001
+# Comment out Official API settings if any
 
-# Or with OneBot mode (requires NapCatQQ)
+# 4. Start all services (including NapCatQQ)
 docker-compose --profile onebot up -d
+
+# 5. Open browser, access NapCatQQ WebUI
+# http://localhost:6099
+# Scan QR code to login your bot QQ account
+
+# 6. Done! Send messages to your bot now
 ```
 
-### Option 2: Manual Installation
+#### Verify
+
+```bash
+# Check service status
+curl http://localhost:3000/health
+```
+
+---
+
+### Option 2: QQ Official API
+
+**Best for: Public servers, official API preference**
+
+#### Prerequisites
+
+- Public server OR tunneling tool
+- QQ Open Platform account ([Apply here](https://bot.q.qq.com))
+- Created QQ bot
+
+#### Steps
+
+##### A. Create QQ Bot
+
+1. Visit [QQ Open Platform](https://bot.q.qq.com)
+2. Create a bot, get `AppID` and `AppSecret`
+
+##### B. Setup Tunneling (for local dev)
+
+```bash
+# Option 1: Cloudflare Tunnel (recommended, free)
+brew install cloudflared
+cloudflared tunnel --url http://localhost:3000
+# Output: https://xxx.trycloudflare.com
+
+# Option 2: ngrok
+brew install ngrok
+ngrok http 3000
+# Output: https://xxx.ngrok.io
+```
+
+##### C. Configure QQ Open Platform
+
+1. Bot Settings → Sandbox Config
+2. Set callback URL: `https://your-domain/webhook/qq`
+3. Add test users (your QQ number)
+
+##### D. Start Service
+
+```bash
+# 1. Clone project
+git clone https://github.com/baidong0228/opencode-im-bridge.git
+cd opencode-im-bridge
+
+# 2. Create config
+cp .env.example .env
+
+# 3. Edit .env
+QQ_ENABLED=true
+QQ_APP_ID=your_app_id
+QQ_APP_SECRET=your_secret
+
+# 4. Start
+docker-compose up -d
+# OR
+pnpm install && pnpm build && pnpm start
+```
+
+---
+
+### Option 3: Manual Installation
+
+**Best for: Developers, custom deployment**
 
 #### Prerequisites
 
 - Node.js >= 20.0.0
-- pnpm (recommended) or npm
-- For OneBot mode: A QQ bot client (e.g., [NapCatQQ](https://github.com/NapNeko/NapCatQQ))
+- pnpm (`npm install -g pnpm`)
+- For OneBot mode: NapCatQQ or other OneBot implementation
 
-#### Install
+#### Steps
 
 ```bash
-# Install dependencies
+# 1. Clone
+git clone https://github.com/baidong0228/opencode-im-bridge.git
+cd opencode-im-bridge
+
+# 2. Install
 pnpm install
 
-# Build
+# 3. Build
 pnpm build
-```
 
-#### Configuration
-
-1. Copy the example configuration:
-
-```bash
+# 4. Configure
 cp .env.example .env
-```
+# Edit .env for your mode
 
-2. Edit `.env` with your settings:
-
-**For QQ Official API (Out-of-the-box):**
-
-```bash
-# Enable QQ adapter
-QQ_ENABLED=true
-
-# QQ official bot credentials (get from https://bot.q.qq.com)
-QQ_APP_ID=your_app_id
-QQ_APP_SECRET=your_app_secret
-
-# (Optional) Restrict access
-# QQ_ALLOWED_USERS=123456789,987654321
-```
-
-**For OneBot Protocol (requires NapCatQQ):**
-
-```bash
-# Enable QQ adapter
-QQ_ENABLED=true
-
-# OneBot WebSocket URL
-QQ_WS_URL=ws://localhost:3001
-
-# (Optional) Restrict access
-# QQ_ALLOWED_USERS=123456789,987654321
-```
-
-#### Start
-
-```bash
-# Start the bridge
+# 5. Start
 pnpm start
-
-# Or use the quick-start script
-./start.sh        # Linux/macOS
-start.bat         # Windows
 ```
 
-### Usage
+---
 
-Send messages to your QQ bot:
+## 📱 Usage
 
-```
-# Basic chat
-你好，请帮我写一个 Hello World 程序
-
-# With context
-查看当前目录结构
-
-# Commands
-/help  - Show help
-/status - Check OpenCode status
-```
-
-## Architecture
+### Send Messages to Bot
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                  opencode-im-bridge                     │
-│                                                         │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
-│  │ QQ Adapter  │  │Lark Adapter │  │Wx Adapter   │    │
-│  │  (OneBot)   │  │  (Official) │  │ (WeCom)     │    │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘    │
-│         │                │                │            │
-│         └────────────────┼────────────────┘            │
-│                          │                             │
-│                  ┌───────▼───────┐                     │
-│                  │Message Router │                     │
-│                  │  + Sessions   │                     │
-│                  └───────┬───────┘                     │
-│                          │                             │
-│                  ┌───────▼───────┐                     │
-│                  │ OpenCode SDK  │                     │
-│                  └───────────────┘                     │
-└─────────────────────────────────────────────────────────┘
+# Normal conversation
+Help me write a Python crawler
+
+# Help
+/help
+
+# Check status
+/status
+
+# List files
+List files in current directory
 ```
 
-## Configuration Reference
+### Permission Control
+
+Configure in `.env`:
+
+```bash
+# Allow specific users (QQ numbers)
+QQ_ALLOWED_USERS=123456789,987654321
+
+# Allow specific groups
+QQ_ALLOWED_GROUPS=123456789
+
+# No config = Open to all
+```
+
+---
+
+## ⚙️ Configuration
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Bridge server port | `3000` |
-| `LOG_LEVEL` | Log level (trace/debug/info/warn/error) | `info` |
-| `QQ_ENABLED` | Enable QQ adapter | `false` |
-| `QQ_WS_URL` | OneBot WebSocket URL | - |
-| `QQ_APP_ID` | QQ official bot AppID | - |
-| `QQ_APP_SECRET` | QQ official bot AppSecret | - |
-| `QQ_ALLOWED_USERS` | Allowed user IDs (comma-separated) | - |
-| `QQ_ALLOWED_GROUPS` | Allowed group IDs (comma-separated) | - |
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `PORT` | Server port | `3000` | ❌ |
+| `LOG_LEVEL` | Log level | `info` | ❌ |
+| `QQ_ENABLED` | Enable QQ | `true` | ✅ |
+| `QQ_WS_URL` | OneBot WebSocket | - | OneBot |
+| `QQ_APP_ID` | Official API AppID | - | Official |
+| `QQ_APP_SECRET` | Official API Secret | - | Official |
+| `QQ_ALLOWED_USERS` | Whitelist users | - | ❌ |
+| `QQ_ALLOWED_GROUPS` | Whitelist groups | - | ❌ |
 
-See [.env.example](./.env.example) for full configuration options.
+---
 
-## Development
+## 🐳 Docker Commands
 
 ```bash
-# Development mode with hot reload
-pnpm dev
+# Start (OneBot mode)
+docker-compose --profile onebot up -d
 
-# Type checking
-pnpm typecheck
+# Start (Official API mode)
+docker-compose up -d
 
-# Run tests
-pnpm test
+# View logs
+docker-compose logs -f bridge
+
+# Stop
+docker-compose down
+
+# Restart
+docker-compose restart
+
+# Status
+docker-compose ps
 ```
 
-## Contributing
+---
 
-Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+## 🔧 Troubleshooting
 
-## Roadmap
+### Q: OneBot mode not connecting?
 
-- [x] QQ official bot API support
+1. Verify NapCatQQ is running: visit `http://localhost:6099`
+2. Confirm QR code login completed
+3. Check logs: `docker-compose logs napcat`
+
+### Q: Official API not receiving messages?
+
+1. Verify callback URL is correct
+2. Confirm tunneling is working
+3. Confirm test users are added
+
+### Q: Docker startup failed?
+
+1. Verify Docker Desktop is running
+2. Confirm ports 3000/3001/6099 are available
+3. Check logs: `docker-compose logs`
+
+---
+
+## 🗺️ Roadmap
+
+- [x] QQ Official API support
 - [x] OneBot protocol support
-- [x] Docker deployment
+- [x] Docker one-click deployment
+- [x] Permission whitelist
 - [ ] Feishu/Lark adapter
 - [ ] WeChat adapter
 - [ ] Web dashboard
-- [ ] Multi-language support
-- [ ] Plugin system for custom commands
+- [ ] Multi-turn conversation context
 
-## License
+---
+
+## 📄 License
 
 [MIT](./LICENSE)
 
-## Acknowledgments
+---
 
-- [OpenCode](https://opencode.ai) - The AI coding agent
-- [OneBot](https://github.com/howmanybots/onebot) - Unified chatbot protocol
-- [NapCatQQ](https://github.com/NapNeko/NapCatQQ) - Modern QQ bot implementation
+## 💝 Acknowledgments
+
+- [OpenCode](https://github.com/opencode-ai/opencode) - AI coding assistant
+- [NapCatQQ](https://github.com/NapNeko/NapCatQQ) - QQ bot implementation
+- [OneBot](https://github.com/botuniverse/onebot) - Unified bot protocol
